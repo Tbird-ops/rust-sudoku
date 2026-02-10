@@ -13,14 +13,12 @@ const TERMINOLOGY: () = ();
 /// Expects the parameters:
 /// - `filename: &str` - path to input file
 pub fn read_board_file(filename: &str) -> Vec<u8> {
-    let contents = fs::read_to_string(filename).expect("Something went wrong reading the file");
-    let mut board: Vec<u8> = Vec::new();
-    for c in contents.chars() {
-        if c.is_ascii_digit() {
-            board.push(c.to_digit(10).unwrap() as u8);
-        }
-    }
-    board
+    fs::read_to_string(filename)
+        .expect("Something went wrong reading the file")
+        .chars()
+        .filter_map(|c| c.to_digit(10))
+        .map(|c| c as u8)
+        .collect()
 }
 
 /// Find box ID for given cell ID
@@ -303,6 +301,18 @@ pub fn print_board(board: &[u8]) {
         print_row(board, row_id);
     }
     println!("  -------------------------------");
+}
+
+/// Fill in a cell of the board
+///
+/// Expects the parameters:
+/// - `board: &[u8]`  - representing board in 1D array
+/// - `cell_idx: u8`  - which cell in the board to fill
+/// - `value: u8`     - What value to write in the cell
+pub fn write_cell(board: &[u8], cell_idx: u8, value: u8) -> Vec<u8> {
+    let mut new_board: Vec<u8> = board.to_vec();
+    new_board[cell_idx as usize] = value;
+    new_board
 }
 
 //TODO Add some board generation capabilities instead of just reading from file for known good
